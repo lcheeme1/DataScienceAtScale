@@ -1,0 +1,29 @@
+---
+title: "Communicating Data Science Results Assignment 1"
+author: "Lee Chee Meng"
+date: "27 November 2015"
+output: html_document
+---
+
+The plot below shows the count of summarized offense description in Seattle sorted in descending order.  We can see that Car Prowl is the most prevalent crime in Seattle.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+data <- read.csv("C:/Users/lcheeme1/Documents/seattle_incidents_summer_2014.csv")
+
+library(plyr)
+y <- count(data, "Summarized.Offense.Description")
+
+library(dplyr)
+z <- arrange(y, desc(freq))
+dotchart(z$freq, labels=z$Summarized.Offense.Description, cex=0.7, main="Summarized Offense Description Count", xlab="Count")
+```
+
+The plot below shows the crime occurence in Seattle plotted spatially.  We can see that the center part of Seatttle has the most crime as it is most densely populated with points.
+
+```{r, echo=FALSE}
+dataWithLocation <- filter(data, Location != "(0.0, 0.0)")
+
+par(mfrow=c(1,1), mar=c(0.1, 0.1, 0.1, 0.1))
+
+plot(dataWithLocation$Longitude, dataWithLocation$Latitude, cex=0.7, main="Crime Location", xlab="Longitude", ylab="Latitude", col="black", pch=20)
+```
