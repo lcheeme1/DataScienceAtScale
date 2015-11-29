@@ -1,0 +1,58 @@
+---
+title: "Communicating Data Science Results Assignment 1"
+author: "Lee Chee Meng"
+date: "29 November 2015"
+output: html_document
+---
+
+### Top Offenses 
+
+A frequency dot chart for the Summarized Offense Description field is plotted below and we see that Car Prowl is the most common offense.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+data <- read.csv("C:/Users/lcheeme1/Documents/seattle_incidents_summer_2014.csv")
+
+library(lubridate)
+data$Date.Reported <- mdy_hms(data$Date.Reported)
+data$Occurred.Date.or.Date.Range.Start <- mdy_hms(data$Occurred.Date.or.Date.Range.Start)
+data$Occurred.Date.Range.End <- mdy_hms(data$Occurred.Date.Range.End)
+
+library(dplyr)
+
+timePortion <- as.POSIXlt(data$Occurred.Date.or.Date.Range.Start)
+hourPortion <- timePortion$hour
+data <- mutate(data, Hour = hourPortion)
+data <- mutate(data, WeekOfDay = weekdays(data$Occurred.Date.or.Date.Range.Start))
+
+offenseCount <- plyr::count(data, c("Summarized.Offense.Description"))
+offenseCountSorted <- arrange(offenseCount, desc(freq))
+dotchart(offenseCountSorted$freq, labels=offenseCountSorted$Summarized.Offense.Description, cex=0.7, main="Summarized Offense Description Count", xlab="Count")
+
+```
+
+### District Sector Analysis 
+
+A frequency bar chart for the District Sector field is plotted below colored by the precinct that the sectors belong to. Ignoring the blank and 99 district sectors, we see that the district sectors in the south and southwest precincts have less crime than the north, east and west precincts.  
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+barplot(table(data$District.Sector), col=c("grey","grey","purple","blue", "green", "blue", "yellow","blue","purple","green","purple","green","purple","brown","green", "brown","brown","purple","yellow"), main = "District Sector Count", xlab="District Sector")
+
+legend(0, 2500, c("North", "East", "South", "West", "Southwest"), cex=0.7,  pch=c(16,16,16,16,16), col=c("purple", "blue", "brown", "green", "yellow"), bty="n")
+
+```
+
+### Week of Day Analysis 
+
+A frequency bar chart for the week of day field is plotted below and we see that most crimes occur on Fridays.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+barplot(table(data$WeekOfDay), main = "Week of Day Count", xlab="Week of Day")
+```
+
+### Hour of Day Analysis 
+
+A frequency bar chart for the hour of day field is plotted below and we see that there is least crime during the 4 to 6 am period.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+barplot(table(data$Hour), main = "Hour of Day Count", xlab="Hour of Day")
+```
